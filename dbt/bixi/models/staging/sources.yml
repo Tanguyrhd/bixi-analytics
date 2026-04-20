@@ -1,0 +1,10 @@
+version: 2
+
+sources:
+  - name: raw
+    project: bixi-492615
+    dataset: raw
+    tables:
+      - name: trips_2023
+      - name: trips_2024
+      - name: trips_2025

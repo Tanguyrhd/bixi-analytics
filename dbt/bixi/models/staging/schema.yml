@@ -1,0 +1,45 @@
+version: 2
+
+models:
+  - name: stg_trips
+    description: >
+      Cleans and unions raw Bixi trip data across all years.
+      One row per trip. Renames raw columns to snake_case, converts
+      millisecond timestamps to TIMESTAMP, and filters out invalid records
+      (null timestamps, trips where end is before start).
+    columns:
+      - name: started_at
+        description: Trip start timestamp (converted from milliseconds).
+        tests:
+          - not_null
+      - name: ended_at
+        description: Trip end timestamp (converted from milliseconds).
+        tests:
+          - not_null
+      - name: duration_seconds
+        description: Trip duration in seconds (ended_at - started_at).
+        tests:
+          - not_null
+      - name: year
+        description: Calendar year of the trip (2023, 2024, or 2025).
+        tests:
+          - not_null
+          - accepted_values:
+              values: [2023, 2024, 2025]
+              quote: false
+      - name: start_station_name
+        description: Name of the departure station.
+      - name: start_arrondissement
+        description: Montreal borough of the departure station.
+      - name: start_lat
+        description: Latitude of the departure station.
+      - name: start_lng
+        description: Longitude of the departure station.
+      - name: end_station_name
+        description: Name of the arrival station.
+      - name: end_arrondissement
+        description: Montreal borough of the arrival station.
+      - name: end_lat
+        description: Latitude of the arrival station.
+      - name: end_lng
+        description: Longitude of the arrival station.

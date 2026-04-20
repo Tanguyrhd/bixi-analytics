@@ -1,0 +1,18 @@
+# environment
+.env
+
+# raw data files (stored in GCS, not git)
+data/
+
+# screenshots
+*.png
+
+# python
+__pycache__/
+*.pyc
+.pyenv/
+
+# dbt
+dbt/bixi/target/
+dbt/bixi/dbt_packages/
+dbt/**/logs/

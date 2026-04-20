@@ -1,0 +1,155 @@
+version: 2
+
+models:
+  - name: fct_trips
+    description: >
+      One row per Bixi trip (2023–2025). Adds rich time dimensions
+      (month, day of week, hour) and duration bucketing on top of stg_trips.
+      Use this as the base table for most trip-level analysis.
+    columns:
+      - name: started_at
+        description: Trip start timestamp.
+        tests:
+          - not_null
+      - name: ended_at
+        description: Trip end timestamp.
+        tests:
+          - not_null
+      - name: duration_seconds
+        description: Trip duration in seconds.
+        tests:
+          - not_null
+      - name: duration_minutes
+        description: Trip duration in minutes, rounded to 2 decimal places.
+      - name: duration_category
+        description: "Bucketed trip length: 'short (< 5 min)', 'medium (5-30 min)', or 'long (> 30 min)'."
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['short (< 5 min)', 'medium (5-30 min)', 'long (> 30 min)']
+      - name: year
+        description: Calendar year of the trip.
+        tests:
+          - not_null
+          - accepted_values:
+              values: [2023, 2024, 2025]
+              quote: false
+      - name: month
+        description: Month number (1=January, 12=December).
+        tests:
+          - accepted_values:
+              values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+              quote: false
+      - name: month_name
+        description: Full month name (e.g. 'January').
+      - name: week_of_year
+        description: ISO week number within the year.
+      - name: day_of_week
+        description: Day of week (1=Sunday, 7=Saturday in BigQuery).
+      - name: day_name
+        description: Full day name (e.g. 'Monday').
+      - name: hour_of_day
+        description: Hour of trip start (0–23).
+      - name: start_station_name
+        description: Name of the departure station.
+      - name: start_arrondissement
+        description: Montreal borough of the departure station.
+      - name: start_lat
+        description: Latitude of the departure station.
+      - name: start_lng
+        description: Longitude of the departure station.
+      - name: end_station_name
+        description: Name of the arrival station.
+      - name: end_arrondissement
+        description: Montreal borough of the arrival station.
+      - name: end_lat
+        description: Latitude of the arrival station.
+      - name: end_lng
+        description: Longitude of the arrival station.
+
+  - name: agg_stations
+    description: >
+      One row per station per year. Aggregates departures and arrivals to
+      compute net flow (supply/demand imbalance). Excludes stations with
+      fewer than 100 departures or arrivals, and drops extreme outliers
+      where net flow exceeds 500% of departures.
+    columns:
+      - name: station_name
+        description: Name of the Bixi station.
+        tests:
+          - not_null
+      - name: arrondissement
+        description: Montreal borough the station belongs to.
+      - name: lat
+        description: Latitude of the station.
+      - name: lng
+        description: Longitude of the station.
+      - name: year
+        description: Calendar year.
+        tests:
+          - not_null
+          - accepted_values:
+              values: [2023, 2024, 2025]
+              quote: false
+      - name: departures
+        description: Number of trips that started at this station.
+        tests:
+          - not_null
+      - name: arrivals
+        description: Number of trips that ended at this station.
+        tests:
+          - not_null
+      - name: net_flow
+        description: departures minus arrivals. Positive = more bikes leaving than arriving.
+      - name: net_flow_pct
+        description: net_flow as a percentage of departures.
+
+  - name: fct_winter
+    description: >
+      One row per Bixi trip during winter months (December–March), for
+      winters 2024 and 2025 only. Built on top of fct_trips. Adds
+      winter-specific dimensions: fiscal winter year (December is grouped
+      with the following year), month order, and month name.
+    columns:
+      - name: started_at
+        description: Trip start timestamp.
+        tests:
+          - not_null
+      - name: duration_seconds
+        description: Trip duration in seconds.
+        tests:
+          - not_null
+      - name: duration_minutes
+        description: Trip duration in minutes, rounded to 2 decimal places.
+      - name: winter_year
+        description: >
+          Fiscal winter year. December 2023 → 2024, January–March 2024 → 2024.
+          Allows grouping a full winter season under one year.
+        tests:
+          - not_null
+          - accepted_values:
+              values: [2024, 2025]
+              quote: false
+      - name: winter_month_order
+        description: Month sequence within the winter season (1=December, 2=January, 3=February, 4=March).
+        tests:
+          - not_null
+          - accepted_values:
+              values: [1, 2, 3, 4]
+              quote: false
+      - name: winter_month_name
+        description: Full name of the winter month.
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['December', 'January', 'February', 'March']
+      - name: hour_of_day
+        description: Hour of trip start (0–23).
+      - name: start_station_name
+        description: Name of the departure station.
+      - name: start_arrondissement
+        description: Montreal borough of the departure station.
+      - name: end_station_name
+        description: Name of the arrival station.
+      - name: end_arrondissement
+        description: Montreal borough of the arrival station.
