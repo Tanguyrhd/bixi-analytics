@@ -13,8 +13,8 @@ trips_{{ year }} as (
         ENDSTATIONARRONDISSEMENT        as end_arrondissement,
         ENDSTATIONLATITUDE              as end_lat,
         ENDSTATIONLONGITUDE             as end_lng,
-        TIMESTAMP_MILLIS(STARTTIMEMS)   as started_at,
-        TIMESTAMP_MILLIS(ENDTIMEMS)     as ended_at,
+        DATETIME(TIMESTAMP_MILLIS(STARTTIMEMS), 'America/Montreal')   as started_at,
+        DATETIME(TIMESTAMP_MILLIS(ENDTIMEMS), 'America/Montreal')     as ended_at,
         TIMESTAMP_DIFF(
             TIMESTAMP_MILLIS(ENDTIMEMS),
             TIMESTAMP_MILLIS(STARTTIMEMS),

@@ -13,6 +13,7 @@ select
     EXTRACT(WEEK from started_at)               as week_of_year,
     EXTRACT(DAYOFWEEK from started_at)          as day_of_week,
     FORMAT_DATE('%A', DATE(started_at))         as day_name,
+    MOD(EXTRACT(DAYOFWEEK from started_at) + 5, 7) + 1 as day_of_week_mon_first,
     EXTRACT(HOUR from started_at)               as hour_of_day,
 
     -- origin station dimensions
