@@ -3,6 +3,12 @@
 End-to-end analytics pipeline for [Bixi](https://bixi.com) Montreal bike-share data.
 Covers data ingestion from GCS to BigQuery, and SQL transformations with dbt.
 
+## Dashboard
+
+[![Dashboard preview](assets/dashboard_summary.png)](https://datastudio.google.com/reporting/59a4f383-8918-4ac7-928b-b32a6eedc802)
+
+[View the live dashboard](https://datastudio.google.com/reporting/59a4f383-8918-4ac7-928b-b32a6eedc802) — 3 pages: usage summary, winter analysis, and station rebalancing.
+
 ## Architecture
 
 ```text
